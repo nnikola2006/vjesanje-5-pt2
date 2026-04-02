@@ -22,6 +22,13 @@ int main(int argc, char *argv[])
     if (opcija == 1) 
     {
         // OPCIJA 1: unos i sort
+        FILE *datoteka = fopen(argv[1], "ab");
+        if (datoteka == NULL) 
+        {
+            printf("Greska pri otvaranju datoteke za pisanje!\n");
+            return 1;
+        }
+
         int n;
         printf("Koliko brojeva zelite unijeti? ");
         do
@@ -29,39 +36,34 @@ int main(int argc, char *argv[])
             scanf("%d", &n);
         } while (n < 1);
         
-        int niz[n];
-        // Unos brojeva
-        printf("Unesite %d cjelobrojnih podataka:\n", n);
+        char telefonski_brojevi[n][30];
         for (int i = 0; i < n; i++) 
         {
-            scanf("%d", &niz[i]);
+            printf("Unesite %d. broj telefona: ", i+1);    
+            scanf("%s", telefonski_brojevi[i]);
         }
-
+        
         // Sortiranje niza u opadajućem redoslijedu (bubble sort (bubble gum) algoritam)
         for (int i = 0; i < n - 1; i++) 
         {
             for (int j = 0; j < n - i - 1; j++) 
             {
-                // Ako je trenutni broj manji od sljedećeg, mijenjamo im mjesta
-                if (niz[j] < niz[j + 1]) 
+                // strcmp vraca < 0 ako je prvi string "manji" (po abecedi/brojevima) od drugog.
+                // Ako zelimo opadajuci redoslijed, mijenjamo mjesta ako je prvi manji od drugog.
+                // (Ako zelis rastuci redoslijed, samo promijeni < 0 u > 0)
+                if (strcmp(telefonski_brojevi[j], telefonski_brojevi[j + 1]) < 0) 
                 {
-                    int privremena = niz[j];
-                    niz[j] = niz[j + 1];
-                    niz[j + 1] = privremena;
+                    char privremena[30];
+                    // Swap za stringove se radi preko strcpy funkcije
+                    strcpy(privremena, telefonski_brojevi[j]);
+                    strcpy(telefonski_brojevi[j], telefonski_brojevi[j + 1]);
+                    strcpy(telefonski_brojevi[j + 1], privremena);
                 }
             }
         }
 
-        // upisujemo u datoteku u binarnom formatu
-        FILE *datoteka = fopen(argv[1], "wb");
-        if (datoteka == NULL) 
-        {
-            printf("Greska pri otvaranju datoteke za pisanje!\n");
-            return 1;
-        }
-
         // Upisuje redom vrijednosti
-        fwrite(niz, sizeof(int), n, datoteka);
+        fwrite(telefonski_brojevi, sizeof(char) * 30, n, datoteka);
 
         fclose(datoteka);
         printf("Podaci su uspjesno sortirani i sacuvani u %s!\n", argv[1]);
@@ -69,7 +71,6 @@ int main(int argc, char *argv[])
     else if (opcija == 2) 
     {
         // OPCIJA 2: PRIKAZ POSTOJECIH PODATAKA
-        
         char unos_naziva[100];
         char *ime_datoteke;
 
@@ -90,12 +91,13 @@ int main(int argc, char *argv[])
             return 1;
         }
 
-        int broj;
+        char telefonski_broj[30];
+        int rb = 1;
         printf("\n--- SORTIRANI BROJEVI (%s) ---\n", ime_datoteke);
         // Petlja se vrti sve dok fread uspijeva da procita po jedan cijeli broj (int)
-        while (fread(&broj, sizeof(int), 1, datoteka) == 1) 
+        while (fread(telefonski_broj, sizeof(char)*30, 1, datoteka) == 1) 
         {
-            printf("%d ", broj);
+            printf("%d. %s\n", rb++, telefonski_broj);
         }
         printf("\n");
 
