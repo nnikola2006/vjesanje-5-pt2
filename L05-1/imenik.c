@@ -98,3 +98,241 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+void selectionSort(int niz[], int n) 
+{
+    int i, j, min_indeks, privremena;
+    
+    for (i = 0; i < n - 1; i++) 
+    {
+        // Pretpostavljamo da je trenutni element najmanji
+        min_indeks = i;
+        
+        // Trazimo stvarni najmanji element u ostatku niza
+        for (j = i + 1; j < n; j++) 
+        {
+            if (niz[j] < niz[min_indeks]) 
+            {
+                min_indeks = j;
+            }
+        }
+        
+        // Mijenjamo mjesta trenutnom i najmanjem elementu
+        privremena = niz[min_indeks];
+        niz[min_indeks] = niz[i];
+        niz[i] = privremena;
+    }
+}
+
+
+
+void insertionSort(int niz[], int n) 
+{
+    int i, kljuc, j;
+    
+    for (i = 1; i < n; i++) 
+    {
+        kljuc = niz[i];
+        j = i - 1;
+        
+        // Pomjeramo elemente koji su veci od kljuca za jedno mjesto udesno
+        while (j >= 0 && niz[j] > kljuc) 
+        {
+            niz[j + 1] = niz[j];
+            j = j - 1;
+        }
+        // Ubacujemo kljuc na njegovo pravo mjesto
+        niz[j + 1] = kljuc;
+    }
+}
+
+
+
+void shellSort(int niz[], int n) 
+{
+    // Krecemo sa velikim razmakom i prepolovljujemo ga u svakom koraku
+    for (int razmak = n / 2; razmak > 0; razmak /= 2) 
+    {
+        // Radimo modifikovani Insertion sort za dati razmak
+        for (int i = razmak; i < n; i++) 
+        {
+            int privremena = niz[i];
+            int j;
+            
+            for (j = i; j >= razmak && niz[j - razmak] > privremena; j -= razmak) 
+            {
+                niz[j] = niz[j - razmak];
+            }
+            niz[j] = privremena;
+        }
+    }
+}
+
+void bubbleSort(int niz[], int n) 
+{
+    int i, j, privremena;
+    
+    for (i = 0; i < n - 1; i++) 
+    {
+        // Posljednjih 'i' elemenata su vec na svom mjestu
+        for (j = 0; j < n - i - 1; j++) 
+        {
+            // Ako je lijevi veci od desnog, mijenjamo ih
+            if (niz[j] > niz[j + 1]) 
+            {
+                privremena = niz[j];
+                niz[j] = niz[j + 1];
+                niz[j + 1] = privremena;
+            }
+        }
+    }
+}
+
+
+
+// quick sort
+int particija(int niz[], int niski, int visoki) 
+{
+    int pivot = niz[visoki]; // Uzimamo zadnji element kao pivot
+    int i = (niski - 1);     // Indeks manjeg elementa
+    int privremena;
+
+    for (int j = niski; j <= visoki - 1; j++) 
+    {
+        // Ako je trenutni element manji od pivota
+        if (niz[j] < pivot) 
+        {
+            i++;
+            // Mijenjamo niz[i] i niz[j]
+            privremena = niz[i];
+            niz[i] = niz[j];
+            niz[j] = privremena;
+        }
+    }
+    // Stavljamo pivot na njegovu konacnu poziciju
+    privremena = niz[i + 1];
+    niz[i + 1] = niz[visoki];
+    niz[visoki] = privremena;
+    
+    return (i + 1);
+}
+
+void quickSort(int niz[], int niski, int visoki) 
+{
+    if (niski < visoki) 
+    {
+        int pi = particija(niz, niski, visoki);
+
+        // Rekurzivno sortiramo elemente prije i poslije particije
+        quickSort(niz, niski, pi - 1);
+        quickSort(niz, pi + 1, visoki);
+    }
+}
+
+
+// merge
+void spoji(int niz[], int lijevo, int sredina, int desno) 
+{
+    int i, j, k;
+    int n1 = sredina - lijevo + 1;
+    int n2 = desno - sredina;
+
+    // Kreiranje privremenih nizova
+    int L[n1], D[n2];
+
+    // Kopiranje podataka u privremene nizove
+    for (i = 0; i < n1; i++) 
+    {
+        L[i] = niz[lijevo + i];
+    }
+    for (j = 0; j < n2; j++) 
+    {
+        D[j] = niz[sredina + 1 + j];
+    }
+
+    // Spajanje privremenih nizova nazad u glavni niz
+    i = 0; // Pocetni indeks prvog podniza
+    j = 0; // Pocetni indeks drugog podniza
+    k = lijevo; // Pocetni indeks spojenog niza
+    
+    while (i < n1 && j < n2) 
+    {
+        if (L[i] <= D[j]) 
+        {
+            niz[k] = L[i];
+            i++;
+        } 
+        else 
+        {
+            niz[k] = D[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Kopiranje preostalih elemenata iz L[], ako ih ima
+    while (i < n1) 
+    {
+        niz[k] = L[i];
+        i++;
+        k++;
+    }
+
+    // Kopiranje preostalih elemenata iz D[], ako ih ima
+    while (j < n2) 
+    {
+        niz[k] = D[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(int niz[], int lijevo, int desno) 
+{
+    if (lijevo < desno) 
+    {
+        // Nalazenje sredine (ovako se izbjegava overflow za velike brojeve)
+        int sredina = lijevo + (desno - lijevo) / 2;
+
+        // Sortiranje prve i druge polovine
+        mergeSort(niz, lijevo, sredina);
+        mergeSort(niz, sredina + 1, desno);
+
+        // Spajanje sortiranih polovina
+        spoji(niz, lijevo, sredina, desno);
+    }
+}
+*/
